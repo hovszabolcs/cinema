@@ -8,5 +8,8 @@ start:
 stop:
 	./vendor/bin/sail stop
 
+delete:
+	./vendor/bin/sail stop -v
+
 restart:
 	./vendor/bin/sail restart
