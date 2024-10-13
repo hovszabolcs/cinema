@@ -10,7 +10,8 @@ class BaseResource extends JsonResource
     public function with(Request $request): array
     {
         return [
-            'success' => true
+            'type'      => 'response',
+            'success'   => true
         ];
     }
 }

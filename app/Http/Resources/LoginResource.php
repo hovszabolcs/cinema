@@ -9,9 +9,8 @@ class LoginResource extends BaseResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email
+            'user' => new UserResource($this->getUser()),
+            'token' => $this->getToken()->plainTextToken
         ];
     }
 }
