@@ -5,7 +5,7 @@ namespace App\Services\Auth;
 use App\Models\User;
 use Laravel\Sanctum\NewAccessToken;
 
-class AuthInfo implements AuthResponse
+class AuthInfoInterface implements AuthResponseInterface
 {
     public function __construct(
         readonly public User           $user,
