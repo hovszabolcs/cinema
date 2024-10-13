@@ -6,6 +6,11 @@ use JsonSerializable;
 
 abstract class ApiException extends \Exception implements JsonSerializable {
 
+    const RESPONSE_SCHEMA = [
+      'type' => 'error',
+      'success' => false
+    ];
+
     protected int $httpCode = 400;
 
     public function setHttpCode(int $httpCode): static {
@@ -20,9 +25,9 @@ abstract class ApiException extends \Exception implements JsonSerializable {
     public function jsonSerialize(): array
     {
         return [
-            'type' => 'error',
-            'code' => $this->getHttpCode(),
-            'message' =>$this->getMessage(),
+            ...self::RESPONSE_SCHEMA,
+            'code'      => $this->getHttpCode(),
+            'message'   => $this->getMessage(),
         ];
     }
 }
