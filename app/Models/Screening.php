@@ -8,6 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class Screening extends Model
 {
     use HasFactory;
+    /**
+     * @OA\Schema(
+     *     schema="Screening",
+     *     type="object",
+     *     title="Screening",
+     *     @OA\Property(property="id", type="integer", example=1),
+     *     @OA\Property(property="start", type="string", example="2024-10-14 12:00:00"),
+     *     @OA\Property(property="seats_available", type="integer", example=100),
+     *     @OA\Property(property="url", type="string", example="https://example.com/screening"),
+     *     @OA\Property(property="movie_id", type="integer", example=1),
+     *     @OA\Property(property="created_at", type="string", format="date-time", example="2024-10-14 12:00:00"),
+     *     @OA\Property(property="updated_at", type="string", format="date-time", example="2024-10-14 12:00:00")
+     * )
+     */
+
     /*
      * @property int $id
      * @property \Illuminate\Support\Carbon $start
