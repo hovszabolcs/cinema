@@ -1,0 +1,823 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Documentation for Movies",
+        "version": "0.1"
+    },
+    "paths": {
+        "/api/v1/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login to the application",
+                "description": "Authenticate a user with email and password",
+                "operationId": "login",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "test@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful login",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "example": "response"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Test User"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "test@example.com"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "a2|Rsi8wbIq5r2oEpM2hKlRWZorDfp9CkTvSbrtVQZqa6714dec"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Invalid login credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 403
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Rossz felhasználónév, vagy jelszó."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout from the application",
+                "description": "Logs out the authenticated user by invalidating the token",
+                "operationId": "logout",
+                "responses": {
+                    "200": {
+                        "description": "Successful logout",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "example": "response"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/movies": {
+            "get": {
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "List all movies",
+                "description": "Retrieve a list of all movies with their details",
+                "operationId": "listMovies",
+                "responses": {
+                    "200": {
+                        "description": "List of movies",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Movie"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Create a new movie",
+                "description": "Create a new movie with the required details",
+                "operationId": "createMovie",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "description",
+                                    "age_classification",
+                                    "lang",
+                                    "image_path"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "maxLength": 120,
+                                        "example": "New Movie"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "This is a movie description."
+                                    },
+                                    "age_classification": {
+                                        "type": "integer",
+                                        "enum": [
+                                            12,
+                                            16,
+                                            18
+                                        ],
+                                        "example": 16
+                                    },
+                                    "lang": {
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "en"
+                                    },
+                                    "image_path": {
+                                        "type": "string",
+                                        "format": "url",
+                                        "example": "https://example.com/movie.jpg"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Movie created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Movie"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/movies/{id}": {
+            "get": {
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Retrieve a single movie",
+                "description": "Fetch a specific movie by its ID",
+                "operationId": "getMovie",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Movie details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Movie"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Movie not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Delete a movie",
+                "description": "Delete a movie by its ID",
+                "operationId": "deleteMovie",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Movie deleted"
+                    },
+                    "404": {
+                        "description": "Movie not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Update an existing movie",
+                "description": "Update the details of an existing movie",
+                "operationId": "updateMovie",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "description",
+                                    "age_classification",
+                                    "lang",
+                                    "image_path"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "maxLength": 120,
+                                        "example": "Updated Movie Title"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated description."
+                                    },
+                                    "age_classification": {
+                                        "type": "integer",
+                                        "enum": [
+                                            12,
+                                            16,
+                                            18
+                                        ],
+                                        "example": 18
+                                    },
+                                    "lang": {
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "fr"
+                                    },
+                                    "image_path": {
+                                        "type": "string",
+                                        "format": "url",
+                                        "example": "https://example.com/updated_movie.jpg"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Movie updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Movie"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Movie not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/screenings": {
+            "get": {
+                "tags": [
+                    "Screenings"
+                ],
+                "summary": "List all screenings",
+                "description": "Retrieve a list of all screenings",
+                "operationId": "listScreenings",
+                "responses": {
+                    "200": {
+                        "description": "List of screenings",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Screening"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Screenings"
+                ],
+                "summary": "Create a new screening",
+                "description": "Create a new screening with the required details",
+                "operationId": "createScreening",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "start",
+                                    "seats_available",
+                                    "url",
+                                    "movie_id"
+                                ],
+                                "properties": {
+                                    "start": {
+                                        "type": "string",
+                                        "maxLength": 120,
+                                        "example": "2024-10-14 12:00:00"
+                                    },
+                                    "seats_available": {
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "url": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "https://example.com/screening"
+                                    },
+                                    "movie_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Screening created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Screening"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/screenings/{id}": {
+            "get": {
+                "tags": [
+                    "Screenings"
+                ],
+                "summary": "Retrieve a single screening",
+                "description": "Fetch a specific screening by its ID",
+                "operationId": "getScreening",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Screening details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Screening"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Screening not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Screenings"
+                ],
+                "summary": "Delete a screening",
+                "description": "Delete a screening by its ID",
+                "operationId": "deleteScreening",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Screening deleted"
+                    },
+                    "404": {
+                        "description": "Screening not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Screenings"
+                ],
+                "summary": "Update an existing screening",
+                "description": "Update the details of an existing screening",
+                "operationId": "updateScreening",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "start",
+                                    "seats_available",
+                                    "url",
+                                    "movie_id"
+                                ],
+                                "properties": {
+                                    "start": {
+                                        "type": "string",
+                                        "maxLength": 120,
+                                        "example": "2024-10-14 12:00:00"
+                                    },
+                                    "seats_available": {
+                                        "type": "integer",
+                                        "example": 90
+                                    },
+                                    "url": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "https://example.com/updated_screening"
+                                    },
+                                    "movie_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Screening updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Screening"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Screening not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearer_token": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Movie": {
+                "title": "Movie",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "The Movie Title"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "This is a description of the movie."
+                    },
+                    "age_classification": {
+                        "description": "Age classification for movies (12,16,18)",
+                        "type": "integer",
+                        "example": 16
+                    },
+                    "lang": {
+                        "description": "Language of the movie",
+                        "type": "string",
+                        "example": "en"
+                    },
+                    "image_path": {
+                        "description": "URL path of movie image",
+                        "type": "string",
+                        "format": "url",
+                        "example": "https://example.com/movie.jpg"
+                    },
+                    "created_at": {
+                        "description": "Creation timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-14 12:00:00"
+                    },
+                    "updated_at": {
+                        "description": "Last update timestamp",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-14 12:00:00"
+                    }
+                },
+                "type": "object"
+            },
+            "Screening": {
+                "title": "Screening",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "start": {
+                        "type": "string",
+                        "example": "2024-10-14 12:00:00"
+                    },
+                    "seats_available": {
+                        "type": "integer",
+                        "example": 100
+                    },
+                    "url": {
+                        "type": "string",
+                        "example": "https://example.com/screening"
+                    },
+                    "movie_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-14 12:00:00"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-10-14 12:00:00"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearer_token": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        },
+        {
+            "name": "Movies",
+            "description": "Movies"
+        },
+        {
+            "name": "Screenings",
+            "description": "Screenings"
+        }
+    ]
+}
