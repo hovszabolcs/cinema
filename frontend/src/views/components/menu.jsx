@@ -2,8 +2,6 @@ import {useState} from "react";
 
 export default function Menu({ user, token, logoutAction }) {
 
-    const [activeMenu, setActiveMenu] = useState('/');
-
     const menu = [
         {
             label: "Filmek",
@@ -26,7 +24,7 @@ export default function Menu({ user, token, logoutAction }) {
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                     { menu.map((item) => {
                         return (
-                            <li key={item.url} className={"nav-item nav-link" + (activeMenu === item.url ? " active" : "") }>
+                            <li key={item.url} className={"nav-item nav-link" + (location.pathname === item.url ? " active" : "") }>
                                 <a className="nav-link" href={ item.url }>{ item.label }</a>
                             </li>
                         )
