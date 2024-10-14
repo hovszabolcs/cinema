@@ -3,57 +3,54 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreScreeningRequest;
-use App\Http\Requests\UpdateScreeningRequest;
+use App\Http\Resources\ScreeningCollectionResource;
+use App\Http\Resources\ScreeningResource;
 use App\Models\Screening;
+use App\Services\ScreeningService;
+use Illuminate\Http\JsonResponse;
 
 class ScreeningController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        private readonly ScreeningService $screeningService
+    )
     {
-        //
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      */
-    public function create()
+    public function index(): ScreeningCollectionResource
     {
-        //
+        return new ScreeningCollectionResource($this->screeningService->getAll());
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreScreeningRequest $request)
+    public function store(StoreScreeningRequest $request): JsonResponse
     {
-        //
+        return (
+            new ScreeningResource(
+                $this->screeningService->store($request->all())
+        )
+        )->response()->setStatusCode(201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Screening $screening)
+    public function show(Screening $screening): ScreeningResource
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Screening $screening)
-    {
-        //
+        return new ScreeningResource($screening);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateScreeningRequest $request, Screening $screening)
+    public function update(StoreScreeningRequest $request, Screening $screening): ScreeningResource
     {
-        //
+        return new ScreeningResource($this->screeningService->update($request->all(), $screening));
     }
 
     /**
@@ -61,6 +58,7 @@ class ScreeningController extends Controller
      */
     public function destroy(Screening $screening)
     {
-        //
+        $screening->delete();
+        return response()->json(null, 204);
     }
 }

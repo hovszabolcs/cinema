@@ -11,7 +11,7 @@ class StoreScreeningRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,20 @@ class StoreScreeningRequest extends FormRequest
      */
     public function rules(): array
     {
+        if ($this->isMethod('patch')) {
+            return [
+                'start' => 'sometimes|required|string|max:120',
+                'seats_available' => 'sometimes|required|integer|max:127|min:0',
+                'url' => 'sometimes|required|string|max:255',
+                'movie_id' => 'sometimes|required|exists:movies,id'
+            ];
+        }
+
         return [
-            //
+            'start' => 'required|string|max:120',
+            'seats_available' => 'required|integer|max:127|min:0',
+            'url' => 'required|string|max:255',
+            'movie_id' => 'required|exists:movies,id'
         ];
     }
 }
