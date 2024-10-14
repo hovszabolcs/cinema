@@ -8,6 +8,8 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
@@ -29,12 +31,11 @@ class ExceptionHandler
 
     public function handleExceptions()
     {
-
         $this->exceptions->render(function (ApiException $e, Request $request) {
             return response()->json($e, $e->getHttpCode());
         });
 
-        $this->exceptions->render(using: function (AuthenticationException $e, Request $request) {
+        $this->exceptions->render(using: function (AccessDeniedHttpException|AuthenticationException $e, Request $request) {
             return $this->makeResponse(401, $request->is('api/*'));
         });
 
@@ -42,7 +43,7 @@ class ExceptionHandler
             return $this->makeResponse(404, $request->is('api/*'));
         });
 
-        $this->exceptions->render(function (ValidationException $e, Request $request) {
+        $this->exceptions->render(function (MethodNotAllowedHttpException|ValidationException $e, Request $request) {
             $isApi = $request->is('api/*');
 
             return $this->makeResponse(400, $isApi, $e);
@@ -58,12 +59,13 @@ class ExceptionHandler
     private function makeResponse(int $code, bool $isAPI, ?Exception $e = null)
     {
         $code = $code ?: ($e ? $e->getCode() : $code);
+        $message = $e ? $e->getMessage() : __($this->errorMessages[$code]);
 
         return $isAPI
             ? response()->json(
                 [
                     ...$this->getAPIErrorResponseSchema(),
-                    'message' => $e ? $e->getMessage() : __($this->errorMessages[$code])
+                    'message' => $message
                 ], $code)
             : response(__($this->errorMessages[$code]), $code);
     }
