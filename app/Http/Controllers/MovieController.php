@@ -3,64 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMovieRequest;
-use App\Http\Requests\UpdateMovieRequest;
+use App\Http\Resources\BaseResource;
+use App\Http\Resources\MovieCollectionResource;
+use App\Http\Resources\MovieResource;
 use App\Models\Movie;
+use App\Services\MovieService;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-class MovieController extends Controller
+final class MovieController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        private readonly MovieService $movieService
+    )
     {
-        //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function index(): MovieCollectionResource
     {
-        //
+        return new MovieCollectionResource($this->movieService->getAll());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreMovieRequest $request)
+    public function store(StoreMovieRequest $request): JsonResponse
     {
-        //
+        return (
+            new MovieResource(
+                $this->movieService->store($request->all())
+            )
+        )->response()->setStatusCode(201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Movie $movie)
+    public function show(Movie $movie): MovieResource
     {
-        //
+        return new MovieResource($movie);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Movie $movie)
+    public function update(StoreMovieRequest $request, Movie $movie): MovieResource
     {
-        //
+        return new MovieResource($this->movieService->update($request->all(), $movie));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateMovieRequest $request, Movie $movie)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Movie $movie)
     {
-        //
+        $this->movieService->delete($movie);
+        return (new BaseResource([]))->response()->setStatusCode( 204);
     }
 }
