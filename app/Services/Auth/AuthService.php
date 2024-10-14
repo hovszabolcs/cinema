@@ -5,21 +5,21 @@ namespace App\Services\Auth;
 use App\Exceptions\api\common\AuthenticationException;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthService
 {
     /**
      * @throws AuthenticationException
+     * @params ['email' = ?, 'password' = ?] $credentials
      */
-    public function login($email, $password): AuthResponseInterface {
-        /** @var User $user */
-        $user = User::where('email', $email)->first();
-
-        if (!$user || !Hash::check($password, $user->password)) {
-            throw new AuthenticationException('Rossz felhasználónév, vagy jelszó.');
+    public function login(array $credentials): AuthResponseInterface {
+        if (!Auth::attempt($credentials)) {
+            throw new AuthenticationException(__('auth.failed'));
         }
 
+        /** @var User $user */
+        $user = Auth::user();
         $token = $user->createToken('accessToken', [
             // TODO: getUserAbilities
             'movie' => [
@@ -36,6 +36,6 @@ class AuthService
     }
 
     public function logout(Request $request): void {
-        $request->user()->tokens()->delete();
+        $request->user()->currentAccessToken()->delete();
     }
 }
