@@ -20,8 +20,8 @@ final class AuthController extends Controller
      */
     public function login(LoginRequest $request): LoginResource {
         $loginData = $this
-             ->authService
-             ->login($request->get('email'), $request->get('password'));
+            ->authService
+            ->login($request->only('email', 'password'));
 
         return new LoginResource($loginData);
     }
