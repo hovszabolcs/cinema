@@ -3,9 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
-class ScreeningResource extends JsonResource
+class ScreeningResource extends BaseResource
 {
     /**
      * Transform the resource into an array.
@@ -14,6 +13,14 @@ class ScreeningResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id'                => $this->id,
+            'start'             => $this->start,
+            'seats_available'   => $this->seats_available,
+            'url'               => $this->url,
+            'movie'             => $this->movie->title,
+            'created_at'        => $this->formatDate($this->created_at),
+            'updated_at'        => $this->formatDate($this->updated_at)
+        ];
     }
 }

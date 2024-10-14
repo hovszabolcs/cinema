@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MovieController;
+use App\Http\Controllers\ScreeningController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,7 +19,8 @@ Route::middleware('api')
             Route::get('/user', function (Request $request) {
                 return new UserResource($request->user());
             });
-
+            Route::apiResource('/movies', MovieController::class);
+            Route::apiResource('/screenings', ScreeningController::class);
         });
 
 

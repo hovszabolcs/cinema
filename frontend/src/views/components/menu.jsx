@@ -1,21 +1,17 @@
 import {useState} from "react";
 
-export default function Menu({ user, token }) {
+export default function Menu({ user, token, logoutAction }) {
 
     const [activeMenu, setActiveMenu] = useState('/');
 
     const menu = [
-        {
-            label: "Főoldal",
-            url: "/"
-        },
         {
             label: "Filmek",
             url: "/movies"
         },
         {
             label: "Vetítések",
-            url: "/screening"
+            url: "/screenings"
         }
     ];
 
@@ -38,7 +34,7 @@ export default function Menu({ user, token }) {
                     </ul>
                     <span className="navbar-text">
                         { token ?
-                            (<a className="nav-item" href="/logout">Kijelentkezés</a>) :
+                            (<a className="nav-item" href="/logout" onClick={logoutAction}>Kijelentkezés</a>) :
                             (<a className="nav-item" href="/login">Bejelentkezes</a>)
                         }
                     </span>

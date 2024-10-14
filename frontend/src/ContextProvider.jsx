@@ -3,14 +3,17 @@ import {createContext, useContext, useState} from 'react';
 const stateContext = createContext({
     user: null,
     token: null,
+    globalError: '',
     setUser: () => {},
-    setToken: () => {}
+    setToken: () => {},
+    setGlobalError: () => {}
 });
 
 export const ContextProvider = ({children}) => {
 
     const [user, setUser] = useState({ id : null });
     const [token, setTokenValue] = useState(readToken());
+    const [globalError, setGlobalError] = useState('');
 
     function readToken() {
         return localStorage.getItem('token');
@@ -37,8 +40,10 @@ export const ContextProvider = ({children}) => {
         <stateContext.Provider value={{
             user,
             token,
+            globalError,
             setUser,
-            setToken
+            setToken,
+            setGlobalError
         }}>{children}</stateContext.Provider>
     )
 }

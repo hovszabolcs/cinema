@@ -6,7 +6,7 @@ import Login from "./views/login.jsx";
 import Router from "./router.jsx";
 
 createRoot(document.getElementById('app')).render(
-  <StrictMode>
+  //StrictMode>
     <Router />
-  </StrictMode>,
+  //StrictMode>,
 )
